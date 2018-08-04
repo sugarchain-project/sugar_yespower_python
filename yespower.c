@@ -1,5 +1,6 @@
 /*-
  * Copyright 2018 Cryply team
+ * Copyright 2018 bitzenyPlus Developers
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,18 +33,14 @@
 #include "sysendian.h"
 #include "sha256.h"
 
-static const yespower_params_t v1 = {YESPOWER_0_5, 4096, 16, "Client Key", 10};
+#include <stdlib.h>
 
-static const yespower_params_t v2 = {YESPOWER_0_9, 2048, 32, NULL, 0};
+static const yespower_params_t yespower_0_5_bitzeny = {YESPOWER_0_5, 2048, 8, "Client Key", 10};
 
 int yespower_hash(const uint8_t *input, char *output)
 {
-    uint32_t time = le32dec(&input[68]);
-    if (time > 1530003600) {
-        return yespower_tls(input, 80, &v2, (yespower_binary_t *) output);
-    } else {
-        return yespower_tls(input, 80, &v1, (yespower_binary_t *) output);
-    }
+    if (yespower_tls(input, 80, &yespower_0_5_bitzeny, (yespower_binary_t *) output))
+      abort();
 }
 
 static PyObject *yespower_getpowhash(PyObject *self, PyObject *args)
@@ -68,6 +65,6 @@ static PyMethodDef YespowerMethods[] = {
     { NULL, NULL, 0, NULL }
 };
 
-PyMODINIT_FUNC initcrp_yespower(void) {
-    (void) Py_InitModule("crp_yespower", YespowerMethods);
+PyMODINIT_FUNC initzny_yespower(void) {
+    (void) Py_InitModule("zny_yespower", YespowerMethods);
 }
