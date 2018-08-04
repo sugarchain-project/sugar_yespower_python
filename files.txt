@@ -1,0 +1,2 @@
+/usr/local/lib/python2.7/dist-packages/zny_yespower.so
+/usr/local/lib/python2.7/dist-packages/zny_yespower-1.0.egg-info
