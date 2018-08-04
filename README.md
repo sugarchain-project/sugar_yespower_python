@@ -14,25 +14,50 @@ There are many significant differences between yespower 0.5 and 1.0 under the ho
 
 The version of algorithm to use is requested through parameters, allowing for both algorithms to co-exist in client and miner implementations (such as in preparation for a cryptocurrency hard-fork and/or supporting multiple cryptocurrencies in one program).
 
+*****
+
+## FOR DEV ONLY
+If you do not know what you are doing, please do not try. This software is `never guaranteed`.
+
 ### installation:
+WARNING using `sudo`.  
+`--record files.txt` is for uninstallation.
 ```bash
-python setup.py install
-sudo python setup.py install --record files.txt && sudo chown $USER:$USER files.txt
+python setup.py build && \
+sudo python setup.py install --record files.txt && \
+sudo chown $USER:$USER files.txt
 ```
 
-### rebuild & reinstall:
+### (OPTION) rebuild & reinstall:
+WARNING using `sudo`.  
+`--record files.txt` is for uninstallation.
 ```bash
 rm -rf build/ & \
 python setup.py build && \
-sudo python setup.py install --record files.txt && sudo chown $USER:$USER files.txt
+sudo python setup.py install --record files.txt && \
+sudo chown $USER:$USER files.txt
 ```
 
 ### uninstall
+WARNING using `sudo` & `rm`.  
 ```bash
 cat files.txt | sudo xargs rm -rf
 ```
 
 ### testing:
+command 
+```bash
 python block.py
+```
 
-_note: libssl1.0 required (libssl1.1 wont work)_
+result
+```
+$ python block.py
+010000000000000000000000000000000000000000000000000000000000000000000000d6583f75558751197a8e8a2760d4f9b08ba0a40e6e49d456c69f8046c3b85447f0ae0a5bf0ff071f68020000
+
+0007fff000000000000000000000000000000000000000000000000000000000
+00058f19d7aac0b35a4d14af96be446ade0d1c4fab889ec29626c1a5517a2802
+
+hash is lower than target (good)
+```
+_note: libssl1.0 required (libssl1.1 may wont work)_
