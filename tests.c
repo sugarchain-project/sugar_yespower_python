@@ -34,7 +34,7 @@ static void print_PBKDF2_SHA256_raw(const char *passwd, size_t passwdlen,
     const char *salt, size_t saltlen, uint64_t c, size_t dkLen)
 {
 	uint8_t dk[64];
-	int i;
+	size_t i;
 
 	assert(dkLen <= sizeof(dk));
 
@@ -71,10 +71,10 @@ static void print_yespower(yespower_version_t version, uint32_t N, uint32_t r,
 	};
 	uint8_t src[80];
 	yespower_binary_t dst;
-	int i;
+	size_t i;
 
 	const char *q = (pers && pers != pers_bsty_magic) ? "\"": "";
-	printf("yespower(%u, %u, %u, %s%s%s) = ", version, N, r,
+	printf("yespower(%u, %u, %u, %s%s%s) = ", (unsigned int)version, N, r,
 	    q, pers ? pers : "NULL", q);
 
 	for (i = 0; i < sizeof(src); i++)
@@ -94,7 +94,41 @@ static void print_yespower(yespower_version_t version, uint32_t N, uint32_t r,
 		printf("%02x%c", dst.uc[i], i < sizeof(dst) - 1 ? ' ' : '\n');
 }
 
-int main(int argc, const char * const *argv)
+static void print_yespower_loop(yespower_version_t version, const char *pers)
+{
+	uint32_t N, r;
+	uint8_t src[80];
+	yespower_binary_t dst, xor = {{0}};
+	size_t i;
+
+	printf("XOR of yespower(%u, ...) = ", (unsigned int)version);
+
+	for (i = 0; i < sizeof(src); i++)
+		src[i] = i * 3;
+
+	for (N = 1024; N <= 4096; N <<= 1) {
+		for (r = 8; r <= 32; r++) {
+			yespower_params_t params = {
+				.version = version,
+				.N = N,
+				.r = r,
+				.pers = (const uint8_t *)pers,
+				.perslen = pers ? strlen(pers) : 0
+			};
+			if (yespower_tls(src, sizeof(src), &params, &dst)) {
+				puts("FAILED");
+				return;
+			}
+			for (i = 0; i < sizeof(xor); i++)
+				xor.uc[i] ^= dst.uc[i];
+		}
+	}
+
+	for (i = 0; i < sizeof(xor); i++)
+		printf("%02x%c", xor.uc[i], i < sizeof(xor) - 1 ? ' ' : '\n');
+}
+
+int main(void)
 {
 	setvbuf(stdout, NULL, _IOLBF, 0);
 
@@ -133,13 +167,16 @@ int main(int argc, const char * const *argv)
 
 	print_yespower(YESPOWER_0_5, 2048, 8, NULL); /* no personality */
 
-	print_yespower(YESPOWER_0_9, 2048, 8, NULL);
-	print_yespower(YESPOWER_0_9, 4096, 16, NULL);
-	print_yespower(YESPOWER_0_9, 4096, 32, NULL);
-	print_yespower(YESPOWER_0_9, 2048, 32, NULL);
-	print_yespower(YESPOWER_0_9, 1024, 32, NULL);
+	print_yespower(YESPOWER_1_0, 2048, 8, NULL);
+	print_yespower(YESPOWER_1_0, 4096, 16, NULL);
+	print_yespower(YESPOWER_1_0, 4096, 32, NULL);
+	print_yespower(YESPOWER_1_0, 2048, 32, NULL);
+	print_yespower(YESPOWER_1_0, 1024, 32, NULL);
 
-	print_yespower(YESPOWER_0_9, 1024, 32, "personality test");
+	print_yespower(YESPOWER_1_0, 1024, 32, "personality test");
+
+	print_yespower_loop(YESPOWER_0_5, "Client Key");
+	print_yespower_loop(YESPOWER_1_0, NULL);
 
 	return 0;
 }

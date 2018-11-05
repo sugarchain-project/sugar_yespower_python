@@ -35,11 +35,12 @@
 
 #include <stdlib.h>
 
-static const yespower_params_t yespower_0_5_bitzeny = {YESPOWER_0_5, 2048, 8, "Client Key", 10};
+static const yespower_params_t yespower_0_5_sugar = {YESPOWER_0_5, 2048, 8, "Client Key", 10};
+static const yespower_params_t yespower_1_0_sugar = {YESPOWER_1_0, 2048, 32, NULL, 0};
 
 int yespower_hash(const uint8_t *input, char *output)
 {
-    if (yespower_tls(input, 80, &yespower_0_5_bitzeny, (yespower_binary_t *) output))
+    if (yespower_tls(input, 80, &yespower_1_0_sugar, (yespower_binary_t *) output))
       abort();
 }
 
@@ -61,10 +62,10 @@ static PyObject *yespower_getpowhash(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef YespowerMethods[] = {
-    { "getPoWHash", yespower_getpowhash, METH_VARARGS, "Returns the proof of work hash using yespower" },
+    { "getPoWHash", yespower_getpowhash, METH_VARARGS, "Returns the proof of work hash using yespower-1.0.0" },
     { NULL, NULL, 0, NULL }
 };
 
-PyMODINIT_FUNC initzny_yespower(void) {
-    (void) Py_InitModule("zny_yespower", YespowerMethods);
+PyMODINIT_FUNC initsugar_yespower(void) {
+    (void) Py_InitModule("sugar_yespower", YespowerMethods);
 }
