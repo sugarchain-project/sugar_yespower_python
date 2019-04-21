@@ -37,10 +37,17 @@
 
 static const yespower_params_t yespower_0_5_sugar = {YESPOWER_0_5, 2048, 8, "Client Key", 10};
 static const yespower_params_t yespower_1_0_sugar = {YESPOWER_1_0, 2048, 32, NULL, 0};
+static const yespower_params_t yespower_1_0_sugarPersonality = {
+    .version = YESPOWER_1_0,
+    .N = 2048,
+    .r = 32,
+    .pers = "Sugarchain: Decentralized Cryptocurrency for one-CPU-one-vote",
+    .perslen = 61
+};
 
 int yespower_hash(const uint8_t *input, char *output)
 {
-    if (yespower_tls(input, 80, &yespower_1_0_sugar, (yespower_binary_t *) output))
+    if (yespower_tls(input, 80, &yespower_1_0_sugarPersonality, (yespower_binary_t *) output))
       abort();
 }
 
@@ -66,6 +73,6 @@ static PyMethodDef YespowerMethods[] = {
     { NULL, NULL, 0, NULL }
 };
 
-PyMODINIT_FUNC initsugar_yespower(void) {
-    (void) Py_InitModule("sugar_yespower", YespowerMethods);
+PyMODINIT_FUNC initsugarPersonality_yespower(void) {
+    (void) Py_InitModule("sugarPersonality_yespower", YespowerMethods);
 }
